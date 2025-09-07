@@ -1,10 +1,13 @@
-// em src/components/Login.jsx - VERSÃO COM DESIGN APRIMORADO
+// em src/components/Login.jsx - VERSÃO CORRIGIDA E FINAL
 
 import React, { useState } from 'react';
+import { useAuth } from '../context/AuthContext'; // 1. Importa o hook 'useAuth'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faLock } from '@fortawesome/free-solid-svg-icons';
 
-const Login = ({ onLogin }) => {
+// A propriedade 'onLogin' é removida, pois não a usamos mais
+const Login = () => {
+  const { login } = useAuth(); // 2. Pega a função 'login' diretamente do nosso contexto
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -14,6 +17,7 @@ const Login = ({ onLogin }) => {
     setError('');
 
     try {
+      // Garanta que a URL está correta (porta 8000)
       const response = await fetch('http://127.0.0.1:8000/api/login/', {
         method: 'POST',
         headers: {
@@ -23,11 +27,16 @@ const Login = ({ onLogin }) => {
       });
 
       if (!response.ok) {
-        throw new Error('Login ou senha inválidos.');
+        // Tenta ler a mensagem de erro específica do Django
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.non_field_errors?.[0] || 'Login ou senha inválidos.');
       }
 
       const data = await response.json();
-      onLogin(data.token);
+      
+      // 3. AQUI ESTÁ A MUDANÇA CRUCIAL:
+      // Chamamos a função 'login' do contexto, passando todos os dados do usuário
+      login(data);
 
     } catch (err) {
       setError(err.message);
@@ -36,9 +45,9 @@ const Login = ({ onLogin }) => {
 
   return (
     <div className="login-container">
+      {/* O resto do seu formulário de login está perfeito e não precisa de alterações */}
       <form onSubmit={handleSubmit} className="login-form">
         <div className="login-logo">
-          {/* Reutilizando o mesmo logo da sua sidebar */}
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 7V17L12 22L22 17V7L12 2Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M2 7L12 12L22 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M12 12V22" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
         </div>
         <h2>Acessar Sistema</h2>

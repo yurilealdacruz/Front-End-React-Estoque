@@ -1,15 +1,14 @@
-// src/components/ProductItem.jsx - VERSÃO COMPLETA E CORRIGIDA
 
-import React, { useState } from 'react'; // 1. Precisamos do 'useState' para a funcionalidade de expandir
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; // 1. Importa o useAuth para saber a hierarquia
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPencilAlt, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
-// O sub-componente de detalhes está ótimo, sem mudanças aqui.
+// Componente de Detalhes (sem alterações)
 const ProductDetails = ({ product }) => {
     return (
         <div className="product-details">
-            {/* AQUI ESTÁ A MUDANÇA */}
-            {/* Só mostra a imagem se a photoUrl existir */}
             {product.photoUrl && (
                 <img 
                     src={product.photoUrl} 
@@ -17,29 +16,27 @@ const ProductDetails = ({ product }) => {
                     className="product-detail-image" 
                 />
             )}
-            
-            <h4>Histórico de Movimentação</h4>
-            <ul className="movement-history">
-                <li><span className="movement-in">+100</span> unidades recebidas do fornecedor {product.supplier} em 01/08/2025.</li>
-                <li><span className="movement-out">-{100 - product.quantity}</span> unidades vendidas/transferidas.</li>
-            </ul>
+             {/* 1. ADICIONA A SEÇÃO DE DESCRIÇÃO */}
+            {product.descricao && (
+                <div className="product-description">
+                    <h4>Descrição</h4>
+                    <p>{product.descricao}</p>
+                </div>
+            )}
+
             <h4>Detalhes Adicionais</h4>
-            <p><strong>Preço de Custo:</strong> R$ 85,50 | <strong>Preço de Venda:</strong> R$ 179,90</p>
+            <p>Em breve: Histórico de movimentações deste item.</p>
         </div>
     );
 };
 
 
-function ProductItem({ product }) {
-  // 2. Adicionamos o estado para controlar se a linha está expandida ou não
+function ProductItem({ product, onMoveStock }) {
+  const { user } = useAuth(); // 2. Pega os dados do usuário logado do nosso contexto
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // 3. Função para alternar o estado (mostrar/esconder detalhes)
-  const toggleDetails = () => {
-    setIsExpanded(!isExpanded);
-  };
+  const toggleDetails = () => setIsExpanded(!isExpanded);
 
-  // 4. Função para obter a classe CSS correta para colorir o status
   const getStatusClass = (statusText) => {
     const status = statusText.toLowerCase().replace(' ', '-');
     if (status.includes('em-estoque')) return 'status-in-stock';
@@ -47,49 +44,57 @@ function ProductItem({ product }) {
     if (status.includes('fora-de-estoque')) return 'status-out-of-stock';
     return '';
   };
+  
+  // 3. Verifica se o usuário tem permissão para editar/movimentar
+  const canEdit = user && (user.role === 'Admin' || user.role === 'Moderador');
 
   return (
-    // React.Fragment (<>) permite retornar múltiplos elementos (as duas <tr>)
-    <>
+   <>
       <tr className="product-item-summary-row">
         <td><input type="checkbox" /></td>
         <td>
-          <a href={`/product/${product.sku}`} className="product-sku-link">
+          <Link to={`/produtos/editar/${product.sku}`} className="product-sku-link">
             {product.sku}
-          </a>
+          </Link>
         </td>
         <td>{product.lastUpdated}</td>
         <td>{product.name}</td>
+        
+        {/* 2. ADICIONA AS CÉLULAS DE DADOS PARA MODELO E CATEGORIA */}
+        <td>{product.modelo || 'N/A'}</td>
+        <td>{product.categoria_almo || 'N/A'}</td>
+        
         <td>{product.supplier}</td>
         <td>{product.location}</td>
         <td>{product.quantity}</td>
         <td>
-          {/* 5. Usamos a função getStatusClass para adicionar a classe de cor */}
           <span className={`status-pill ${getStatusClass(product.status)}`}>
             {product.status}
           </span>
         </td>
         <td>
           <span className="action-icons">
-            <button className="icon-button" title="Editar">
-              <FontAwesomeIcon icon={faPencilAlt} />
-            </button>
-            {/* 6. O botão da seta agora chama a função toggleDetails */}
-            <button 
-              className={`icon-button toggle-details-icon ${isExpanded ? 'expanded' : ''}`} 
-              title="Ver Detalhes"
-              onClick={toggleDetails}
-            >
+            {canEdit && (
+              <>
+                <button className="icon-button" title="Movimentar Estoque" onClick={() => onMoveStock(product)}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="8 21 3 21 3 16"></polyline><line x1="20" y1="4" x2="3" y2="21"></line></svg>
+                </button>
+                <Link to={`/produtos/editar/${product.sku}`} className="icon-button" title="Editar">
+                  <FontAwesomeIcon icon={faPencilAlt} />
+                </Link>
+              </>
+            )}
+            <button className={`icon-button toggle-details-icon ${isExpanded ? 'expanded' : ''}`} title="Ver Detalhes" onClick={toggleDetails}>
               <FontAwesomeIcon icon={faChevronDown} />
             </button>
           </span>
         </td>
       </tr>
 
-      {/* 7. Renderização Condicional: A linha de detalhes só aparece se 'isExpanded' for true */}
       {isExpanded && (
         <tr className="product-details-row">
-          <td colSpan="9"> {/* colSpan="9" faz esta célula ocupar todas as 9 colunas da tabela */}
+          {/* 3. ATUALIZA O COLSPAN PARA 11 (O NOVO NÚMERO TOTAL DE COLUNAS) */}
+          <td colSpan="11">
             <ProductDetails product={product} />
           </td>
         </tr>

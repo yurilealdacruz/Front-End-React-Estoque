@@ -1,39 +1,40 @@
-// src/components/ProductList.jsx - CÓDIGO ATUALIZADO E SIMPLIFICADO
+// em src/components/ProductList.jsx
 
-import React from 'react'; // Não precisamos mais de useState aqui
+import React from 'react';
 import ProductItem from './ProductItem.jsx';
 
-// 1. O componente agora recebe o "bilhete" (props). 
-// Usamos { products } para já pegar a lista de dentro do bilhete.
-// src/components/ProductList.jsx
-
-// ...
-
-function ProductList({ products }) {
+// 1. Receba a prop 'onMoveStock' aqui
+const ProductList = ({ products, onMoveStock }) => {
   return (
-    <div className="product-list-container">
+     <div className="products-list">
       <table className="product-table">
         <thead>
           <tr>
             <th></th> {/* Checkbox */}
-            <th>SKU</th> {/* ALTERADO: de 'N' para 'SKU' */}
+            <th>SKU</th>
             <th>Última Atualização</th>
             <th>Produto</th>
+            <th>Modelo</th>      {/* <-- ADICIONADO */}
+            <th>Categoria</th>   {/* <-- ADICIONADO */}
             <th>Fornecedor</th>
             <th>Localização</th>
             <th>Qtd.</th>
             <th>Status</th>
-            <th></th> {/* Coluna para os ícones de ação */}
+            <th>Ações</th>
           </tr>
         </thead>
         <tbody>
           {products.map((product) => (
-            <ProductItem key={product.sku} product={product} />
+            <ProductItem 
+              key={product.sku || product.id} 
+              product={product} 
+              onMoveStock={onMoveStock} 
+            />
           ))}
         </tbody>
       </table>
     </div>
   );
-}
+};
 
 export default ProductList;

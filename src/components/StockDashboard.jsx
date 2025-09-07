@@ -1,0 +1,147 @@
+// em src/pages/StockDashboard.jsx - VERSÃO COM GERADOR DE QR CODE
+
+import React, { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+
+import SearchBar from '../components/SearchBar.jsx';
+import ProductList from '../components/ProductList.jsx';
+import StockMovementModal from '../components/StockMovementModal.jsx';
+import QRCodeModal from '../components/QRCodeModal.jsx'; // 1. Importa o novo modal de QR Code
+
+
+const StockDashboard = () => {
+    const { token, logout } = useAuth();
+    const [products, setProducts] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isStockMovementModalOpen, setIsStockMovementModalOpen] = useState(false); // Renomeado para clareza
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [isQRCodeModalOpen, setIsQRCodeModalOpen] = useState(false); // 2. Novo estado para o modal de QR Code
+    
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    // Funções para manipular a URL
+    const handleFilterChange = (key, value) => {
+        const newParams = new URLSearchParams(searchParams);
+        if (value) {
+            newParams.set(key, value);
+        } else {
+            newParams.delete(key);
+        }
+        setSearchParams(newParams);
+    };
+
+    const fetchProducts = useCallback(async () => {
+        if (!token) return;
+
+        setIsLoading(true);
+        const apiUrl = `http://127.0.0.1:8000/api/produtos/?${searchParams.toString()}`;
+        
+        try {
+            const response = await fetch(apiUrl, {
+                headers: { 'Authorization': `Token ${token}` }
+            });
+            if (!response.ok) {
+                if (response.status === 401) logout();
+                throw new Error('Falha ao buscar dados');
+            }
+            const data = await response.json();
+
+            const formattedData = data.map(p => ({
+                id: p.id,
+                sku: p.sku,
+                lastUpdated: new Date(p.ultima_atualizacao).toLocaleDateString('pt-BR'),
+                name: p.nome,
+                supplier: p.fornecedor || 'N/A',
+                location: p.sala_laboratorio || p.endereco_almo || 'N/A',
+                quantity: p.quantidade,
+                status: p.quantidade > 20 ? 'Em Estoque' : (p.quantidade > 0 ? 'Estoque Baixo' : 'Fora de Estoque'),
+                photoUrl: p.foto ? `${p.foto}` : null,
+                modelo: p.modelo,
+                categoria_almo: p.categoria_almo,
+                descricao: p.descricao,
+            }));
+            setProducts(formattedData);
+        } catch (error) {
+            console.error("Erro ao buscar produtos:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [searchParams, token, logout]);
+
+    useEffect(() => {
+        fetchProducts();
+    }, [fetchProducts]);
+
+    const handleOpenStockMovementModal = (product) => { // Renomeado
+        setSelectedProduct(product);
+        setIsStockMovementModalOpen(true);
+    };
+
+    const handleCloseStockMovementModal = () => { // Renomeado
+        setSelectedProduct(null);
+        setIsStockMovementModalOpen(false);
+    };
+
+    const handleOpenQRCodeModal = () => { // 3. Nova função para abrir o modal de QR Code
+        setIsQRCodeModalOpen(true);
+    };
+
+    const handleCloseQRCodeModal = () => { // 3. Nova função para fechar o modal de QR Code
+        setIsQRCodeModalOpen(false);
+    };
+
+    // 4. Constrói a URL completa para o QR Code
+    const currentAbsoluteUrl = window.location.origin + window.location.pathname + '?' + searchParams.toString();
+
+
+    return (
+        <>
+            <div className="stock-selector-container">
+                <label htmlFor="stock-select">Visualizando Estoque:</label>
+                <select 
+                    id="stock-select"
+                    className="filter-select"
+                    value={searchParams.get('estoque') || 'ALMOXARIFADO'} 
+                    onChange={e => handleFilterChange('estoque', e.target.value)}
+                >
+                    <option value="ALMOXARIFADO">Almoxarifado</option>
+                    <option value="DIDATICO">Ambiente Didático</option>
+                    <option value="ASSISTENCIA">Assistência Técnica</option>
+                </select>
+            </div>
+            
+            <div className="filters">
+                <SearchBar onSearch={(term) => handleFilterChange('search', term)} />
+                {/* Botão para gerar QR Code */}
+                <button className="btn btn-primary" onClick={handleOpenQRCodeModal} style={{ marginLeft: '10px' }}>
+                    Gerar QR Code
+                </button>
+                {/* TODO: Botão de Exportar para Excel aqui, se quiser */}
+            </div>
+            
+            {isLoading ? (
+                <p style={{textAlign: 'center', padding: '2rem'}}>Carregando produtos...</p> 
+            ) : (
+                <ProductList products={products} onMoveStock={handleOpenStockMovementModal} />
+            )}
+
+            {isStockMovementModalOpen && (
+                <StockMovementModal 
+                    product={selectedProduct}
+                    onClose={handleCloseStockMovementModal}
+                    onSuccess={fetchProducts}
+                />
+            )}
+
+            {isQRCodeModalOpen && ( // 5. Renderiza o modal de QR Code condicionalmente
+                <QRCodeModal
+                    url={currentAbsoluteUrl} // Passa a URL atual completa
+                    onClose={handleCloseQRCodeModal}
+                />
+            )}
+        </>
+    );
+};
+
+export default StockDashboard;

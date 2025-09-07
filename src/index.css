@@ -378,3 +378,297 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   pointer-events: none; 
 }
 /* ... resto das regras permanece conceitualmente o mesmo ... */
+
+/* ========================================= */
+/* ESTILOS DA PÁGINA DE ADICIONAR PRODUTO    */
+/* ========================================= */
+
+.add-product-container {
+  /* Usa o estilo de card branco que já temos */
+  background-color: var(--white);
+  border-radius: var(--border-radius-md);
+  padding: var(--space-xl);
+  border: 1px solid var(--border-color);
+}
+
+.add-product-container h1 {
+  font-size: 2.4rem;
+  margin-bottom: var(--space-xl);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: var(--space-md);
+}
+
+/* NOVO: Layout em Grid para o formulário */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Cria duas colunas de tamanho igual */
+  gap: var(--space-lg); /* Espaço entre os campos */
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Deixa um campo ocupar as duas colunas */
+.form-field.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-field label {
+  margin-bottom: var(--space-sm);
+  font-weight: 500;
+  color: var(--text-dark);
+}
+
+/* Estilo unificado para todos os campos do formulário */
+.product-form input[type="text"],
+.product-form input[type="number"],
+.product-form select,
+.product-form textarea {
+  width: 100%;
+  padding: 1.2rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  font-size: 1.5rem;
+  font-family: 'Poppins', sans-serif;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-form textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Estilo para quando o campo está focado */
+.product-form input:focus,
+.product-form select:focus,
+.product-form textarea:focus {
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 2px rgba(74, 105, 255, 0.2);
+  outline: none;
+}
+
+/* Truque para estilizar o input de arquivo */
+.file-input-wrapper {
+  margin-top: var(--space-sm);
+}
+
+.file-input-wrapper input[type="file"] {
+  display: none; /* Esconde o botão feio padrão */
+}
+
+.file-input-label {
+  display: inline-block;
+  padding: 1rem 1.6rem;
+  background-color: #f7f8fc;
+  border: 1px dashed var(--border-color);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.file-input-label:hover {
+  background-color: #eef1f8;
+}
+
+.file-name {
+  margin-left: var(--space-md);
+  font-style: italic;
+  color: var(--text-light);
+}
+
+/* Estilo para o botão de submit */
+.product-form .btn {
+  grid-column: 1 / -1; /* Ocupa a largura total do grid */
+  justify-self: end; /* Alinha o botão à direita */
+  width: auto;
+  min-width: 200px;
+  margin-top: var(--space-lg);
+}
+
+.form-error {
+  grid-column: 1 / -1;
+  color: #F44336;
+  text-align: center;
+}
+
+.mov-entrada {
+    color: var(--status-instock-text); /* Verde */
+    font-weight: 600;
+}
+
+.mov-saida {
+    color: var(--status-outofstock-text); /* Vermelho */
+    font-weight: 600;
+}
+
+.modal-backdrop {
+  /* Camada de fundo que cobre a tela inteira */
+  position: fixed; 
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(26, 32, 53, 0.7); /* Fundo escuro semitransparente */
+  
+  /* Usa flexbox para centralizar o conteúdo */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* Garante que o modal fique na frente de todo o resto */
+  z-index: 1000; 
+}
+
+.modal-content {
+  /* O card branco do modal */
+  background: var(--white);
+  padding: var(--space-xl);
+  border-radius: var(--border-radius-md);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  width: 100%;
+  max-width: 500px; /* Largura máxima do modal */
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  margin-bottom: var(--space-lg);
+  font-size: 2rem;
+}
+
+.modal-content p {
+  margin-bottom: var(--space-lg);
+  color: var(--text-light);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  margin-top: var(--space-xl);
+  border-top: 1px solid var(--border-color);
+  padding-top: var(--space-md);
+}
+
+/* Garante que os campos do formulário dentro do modal usem o estilo padrão */
+.modal-content .form-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: var(--space-md);
+}
+.modal-content .form-field label {
+    margin-bottom: var(--space-sm);
+    font-weight: 500;
+}
+.modal-content .form-field input,
+.modal-content .form-field textarea {
+    width: 100%;
+    padding: 1.2rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    font-size: 1.5rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* em src/index.css */
+
+.product-description {
+    margin-top: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--border-color);
+}
+
+.product-description h4 {
+    margin-bottom: var(--space-sm);
+}
+
+.product-description p {
+    color: var(--text-light);
+    font-size: 1.4rem;
+    line-height: 1.6;
+}
+
+.search-form { display: flex; gap: 10px; flex-grow: 1; }
+
+/* em src/index.css */
+
+/* Estilos para o Modal de QR Code (e outros modais) */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    
+    padding: var(--space-xl);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.modal-content h2 {
+
+    color: var(--text-primary);
+    margin-bottom: var(--space-sm);
+}
+
+.modal-actions {
+    display: flex;
+    gap: var(--space-md);
+    margin-top: var(--space-md);
+}
+
+/* Estilos para a SearchBar */
+.search-form {
+    display: flex;
+    gap: 10px;
+    flex-grow: 1; /* Permite que o formulário ocupe espaço disponível */
+    align-items: center;
+}
+
+.search-container {
+    position: relative;
+    flex-grow: 1;
+}
+
+.search-container input {
+    width: 100%;
+    padding: 8px 10px 8px 35px; /* Padding para o ícone */
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--bg-input);
+    color: var(--text-primary);
+}
+
+.search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    width: 20px;
+    height: 20px;
+}
+
+.filters {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+    flex-wrap: wrap; /* Ajuda em telas menores */
+}
