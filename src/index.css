@@ -1,0 +1,380 @@
+/* src/index.css - VERSÃO RECOMENDADA E PROFISSIONAL */
+
+:root {
+    /* Cores (Já estava ótimo!) */
+    --sidebar-bg: #1A2035;
+    --main-bg: #F7F8FC;
+    --text-dark: #333333;
+    --text-light: #8A92A6;
+    --primary-blue: #4A69FF;
+    --border-color: #E5E9F2;
+    --white: #FFFFFF;
+    
+    --status-instock-bg: #E8F5E9;
+    --status-instock-text: #4CAF50;
+    --status-lowstock-bg: #FFF8E1;
+    --status-lowstock-text: #FFAB00;
+    --status-outofstock-bg: #FFEBEE;
+    --status-outofstock-text: #F44336;
+
+    /* NOVO: Variáveis de Espaçamento e Borda */
+    --space-xs: 0.4rem;  /* 4px */
+    --space-sm: 0.8rem;  /* 8px */
+    --space-md: 1.6rem;  /* 16px */
+    --space-lg: 2.0rem;  /* 20px */
+    --space-xl: 3.2rem;  /* 32px */
+    --border-radius-sm: 0.8rem;
+    --border-radius-md: 1.2rem;
+}
+
+/* NOVO: Reset e configuração da base de REM */
+html {
+  /* Truque comum: 1rem = 10px, facilitando a conversão */
+  font-size: 62.5%;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--main-bg);
+    color: var(--text-dark);
+    /* NOVO: Define um tamanho de fonte base relativo */
+    font-size: 1.4rem; /* Equivalente a 14px */
+}
+
+/* NOVO: Melhoria de acessibilidade para foco de teclado */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 2px solid var(--primary-blue);
+    outline-offset: 2px;
+}
+
+
+/* --- SEÇÕES PRINCIPAIS (COM UNIDADES REM E VARIÁVEIS) --- */
+
+.app-container { display: flex; min-height: 100vh; }
+.sidebar {
+    width: 8rem; /* 80px */
+    background-color: var(--sidebar-bg);
+    padding: var(--space-lg) 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: fixed;
+    height: 100%;
+    z-index: 10;
+}
+.sidebar-logo { margin-bottom: var(--space-xl); }
+.nav-item { margin-bottom: var(--space-md); }
+.nav-link {
+    width: 5rem; height: 5rem;
+    border-radius: var(--border-radius-md);
+    /* ... o resto é igual ... */
+    display: flex; align-items: center; justify-content: center; color: #A0AEC0; transition: all 0.3s ease;
+}
+
+.main-content {
+    flex-grow: 1;
+    margin-left: 8rem; /* 80px */
+    padding: var(--space-xl);
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-xl);
+    
+}
+.main-header h1 { font-size: 2.8rem; font-weight: 600; }
+.header-actions { display: flex; gap: var(--space-sm); }
+.btn {
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--border-radius-sm);
+    /* ... o resto é igual ... */
+    border: none; font-family: 'Poppins', sans-serif; font-weight: 500; cursor: pointer; transition: background-color 0.3s ease;
+}
+
+.btn-primary {
+    background-color: var(--primary-blue);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background-color: #3a55d4;
+}
+
+/* NOVO: Container separado para o seletor de estoque */
+.stock-selector-container {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    background-color: var(--white);
+    padding: var(--space-md);
+    margin-bottom: var(--space-lg);
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--border-color);
+}
+.stock-selector-container label {
+    font-weight: 500;
+    font-size: 1.5rem;
+}
+.stock-selector-container select {
+    min-width: 25rem; /* 250px */
+}
+
+
+.filters {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    background-color: var(--white);
+    padding: var(--space-lg);
+    border-radius: var(--border-radius-md);
+    margin-bottom: var(--space-xl);
+    border: 1px solid var(--border-color);
+}
+.search-container { position: relative; flex-grow: 1; min-width: 40rem; }
+.search-icon { position: absolute; left: var(--space-md); top: 50%; transform: translateY(-50%); color: var(--text-light); }
+.search-container input, .filter-select {
+    width: 100%;
+    padding: 1.2rem; /* 12px */
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--border-color);
+    font-size: 1.4rem;
+    font-family: 'Poppins', sans-serif;
+}
+.search-container input { padding-left: 4.5rem; /* 45px */ }
+
+
+.products-list {
+    background-color: var(--white);
+    border-radius: var(--border-radius-md);
+    padding: var(--space-lg);
+    border: 1px solid var(--border-color);
+}
+
+.products-header, .product-item-summary {
+    display: grid;
+    grid-template-columns: 4rem 1fr 1.5fr 2fr 1.5fr 1fr 0.5fr 1fr 10rem;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    /* ... o resto é igual ... */
+    align-items: center;
+}
+.products-header { font-size: 1.3rem; /* ... */ }
+
+.status-pill {
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: 1.5rem; /* 15px */
+    font-size: 1.2rem;
+    /* ... o resto é igual ... */
+}
+
+
+/* Em src/App.css ou src/components/ProductList.css */
+
+/* Estilos básicos para a tabela */
+.product-table {
+  width: 100%;
+  border-collapse: separate; /* Permite border-spacing */
+  border-spacing: 0 10px; /* Espaço entre as linhas */
+  margin-top: 20px;
+}
+
+.product-table th, .product-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #f0f0f0; /* Linha sutil entre as células */
+}
+
+.product-table th {
+  background-color: #f8f8f8;
+  color: #666;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.85em;
+}
+
+.product-table tbody tr {
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombra suave para cada linha */
+  border-radius: 8px; /* Cantos arredondados */
+}
+
+/* Estilos para o link SKU */
+.product-sku-link {
+  color: #007bff; /* Cor de link azul */
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.product-sku-link:hover {
+  text-decoration: underline;
+}
+
+
+/* Estilos para os status com cores de fundo */
+.product-status {
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 0.8em;
+  font-weight: 600;
+  text-align: center;
+  display: inline-block; /* Para o padding e border-radius funcionarem bem */
+}
+
+.status-in-stock {
+  background-color: #e6ffe6; /* Verde claro */
+  color: #008000; /* Verde escuro */
+}
+
+.status-low-stock {
+  background-color: #fff2e6; /* Laranja claro */
+  color: #ff8c00; /* Laranja escuro */
+}
+
+.status-out-of-stock {
+  background-color: #ffe6e6; /* Vermelho claro */
+  color: #ff0000; /* Vermelho escuro */
+}
+
+/* Estilos para os botões de ícone */
+.action-icons .icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 5px;
+  color: #888;
+  font-size: 1.1em;
+}
+
+.action-icons .icon-button:hover {
+  color: #333;
+}
+
+/* Estilo para o checkbox */
+.product-table input[type="checkbox"] {
+  accent-color: #007bff; /* Cor do checkbox quando marcado */
+  transform: scale(1.2); /* Aumenta um pouco o tamanho */
+  margin-right: 5px; /* Espaçamento à direita */
+}
+
+/* em src/index.css */
+
+/* Estilo para a imagem dentro dos detalhes do produto */
+.product-detail-image {
+    max-width: 150px; /* Largura máxima da imagem */
+    height: auto;
+    border-radius: var(--border-radius-sm); /* Borda arredondada */
+    border: 1px solid var(--border-color);
+    margin-bottom: var(--space-md); /* Espaço abaixo da imagem */
+    display: block; /* Garante que a margem funcione corretamente */
+}
+
+/* ========================================= */
+/* ESTILOS DA PÁGINA DE LOGIN        */
+/* ========================================= */
+
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: var(--main-bg); /* Mesmo fundo cinza do dashboard */
+}
+
+.login-form {
+  background: var(--white);
+  padding: var(--space-xl); /* 32px */
+  border-radius: var(--border-radius-md); /* 12px */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.login-logo {
+  background-color: var(--sidebar-bg);
+  width: 50px;
+  height: 50px;
+  border-radius: var(--border-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-lg); /* Centraliza e adiciona espaço abaixo */
+}
+
+.login-form h2 {
+  margin-bottom: var(--space-lg);
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.form-group {
+  margin-bottom: var(--space-md);
+  text-align: left;
+  position: relative; /* Necessário para posicionar o ícone */
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: var(--space-sm);
+  font-weight: 500;
+  font-size: 1.4rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 1.2rem var(--space-md);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  font-size: 1.5rem;
+  font-family: 'Poppins', sans-serif;
+  /* Espaço à esquerda para o ícone */
+  padding-left: 4rem; 
+}
+
+/* Posicionamento dos ícones dentro do input */
+.input-icon {
+  position: absolute;
+  left: 15px;
+  top: 42px; /* Ajuste conforme necessário */
+  color: var(--text-light);
+}
+
+
+.login-form .btn-primary {
+  width: 100%;
+  margin-top: var(--space-sm);
+  padding: 1.2rem;
+  font-size: 1.6rem;
+}
+
+.login-error {
+  color: #F44336;
+  background-color: #FFEBEE;
+  padding: var(--space-sm);
+  border-radius: var(--border-radius-sm);
+  margin-bottom: var(--space-md);
+  text-align: center;
+  font-size: 1.3rem;
+}
+
+/* em src/index.css */
+
+.logout-btn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.logout-btn svg {
+  /* Garante que o ícone dentro do botão não seja afetado por outros estilos */
+  pointer-events: none; 
+}
+/* ... resto das regras permanece conceitualmente o mesmo ... */
