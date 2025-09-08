@@ -26,7 +26,7 @@ const HistoryPage = () => {
         if (!token) return;
 
         setIsLoading(true);
-        const apiUrl = `http://127.0.0.1:8000/api/movimentacoes/?${searchParams.toString()}`;
+        const apiUrl = `${process.env.REACT_APP_API_URL}/movimentacoes/?${searchParams.toString()}`;
 
         try {
             const response = await fetch(apiUrl, {

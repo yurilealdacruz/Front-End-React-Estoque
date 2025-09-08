@@ -12,7 +12,7 @@ const UserAdminPage = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:8000/api/users/', {
+        const response = await fetch('${process.env.REACT_APP_API_URL}/users/', {
           headers: {
             'Authorization': `Token ${token}`
           }
@@ -31,7 +31,7 @@ const UserAdminPage = () => {
 
   const handleRoleChange = async (userId, newGroup) => {
     try {
-        const response = await fetch(`http://127.0.0.1:8000/api/users/${userId}/set-group/`, {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/users/${userId}/set-group/`, {
             method: 'POST',
             headers: {
                 'Authorization': `Token ${token}`,

@@ -35,7 +35,7 @@ const StockDashboard = () => {
         if (!token) return;
 
         setIsLoading(true);
-        const apiUrl = `http://127.0.0.1:8000/api/produtos/?${searchParams.toString()}`;
+        const apiUrl = `${process.env.REACT_APP_API_URL}/produtos/?${searchParams.toString()}`;
         
         try {
             const response = await fetch(apiUrl, {
