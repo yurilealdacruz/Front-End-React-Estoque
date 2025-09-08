@@ -12,7 +12,7 @@ const UserAdminPage = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('${import.meta.env.VITE_API_URL}/users/', {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/users/`, {
           headers: {
             'Authorization': `Token ${token}`
           }
