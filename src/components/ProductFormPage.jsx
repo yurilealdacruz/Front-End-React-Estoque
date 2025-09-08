@@ -24,7 +24,7 @@ const ProductFormPage = () => {
             setIsLoading(true);
             const fetchProductData = async () => {
                 try {
-                    const response = await fetch(`${process.env.REACT_APP_API_URL}/produtos/${sku}/`, {
+                    const response = await fetch(`${import.meta.env.VITE_API_URL}/produtos/${sku}/`, {
                         headers: { 'Authorization': `Token ${token}` }
                     });
                     if (!response.ok) throw new Error('Produto não encontrado.');
@@ -67,8 +67,8 @@ const ProductFormPage = () => {
 
          // 4. LÓGICA CONDICIONAL: URL e método mudam se estamos editando
         const url = isEditing 
-            ? `${process.env.REACT_APP_API_URL}/produtos/${sku}/` 
-            : `${process.env.REACT_APP_API_URL}/produtos/`;
+            ? `${import.meta.env.VITE_API_URL}/produtos/${sku}/` 
+            : `${import.meta.env.VITE_API_URL}/produtos/`;
         
         const method = isEditing ? 'PUT' : 'POST';
 

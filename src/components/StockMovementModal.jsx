@@ -30,7 +30,7 @@ const StockMovementModal = ({ product, onClose, onSuccess }) => {
         setError('');
 
         try {
-            const response = await fetch('${process.env.REACT_APP_API_URL}/movimentacoes/', {
+            const response = await fetch('${import.meta.env.VITE_API_URL}/movimentacoes/', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Token ${token}`,

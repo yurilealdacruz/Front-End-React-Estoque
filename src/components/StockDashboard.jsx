@@ -35,7 +35,7 @@ const StockDashboard = () => {
         if (!token) return;
 
         setIsLoading(true);
-        const apiUrl = `${process.env.REACT_APP_API_URL}/produtos/?${searchParams.toString()}`;
+        const apiUrl = `${import.meta.env.VITE_API_URL}/produtos/?${searchParams.toString()}`;
         
         try {
             const response = await fetch(apiUrl, {
