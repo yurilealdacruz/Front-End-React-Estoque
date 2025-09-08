@@ -6,7 +6,7 @@ const Header = () => {
   const { user } = useAuth();
   return (
     <header className="main-header">
-      <h1>Controle de Estoque</h1>
+      <h1>Controle de Estoque - Núcleo de Técnologia da Informação</h1>
       <div className="header-actions">
         <button className="btn btn-secondary">Exportar para Excel</button>
         <button className="btn btn-secondary">Exportar para PDF</button>
