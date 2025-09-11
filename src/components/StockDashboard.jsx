@@ -1,27 +1,24 @@
-// em src/pages/StockDashboard.jsx - VERSÃO COM GERADOR DE QR CODE
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-
 import SearchBar from '../components/SearchBar.jsx';
 import ProductList from '../components/ProductList.jsx';
 import StockMovementModal from '../components/StockMovementModal.jsx';
-import QRCodeModal from '../components/QRCodeModal.jsx'; // 1. Importa o novo modal de QR Code
+import QRCodeModal from '../components/QRCodeModal.jsx'; 
 
 
 const StockDashboard = () => {
-    const { token, logout } = useAuth();
+    const { user, token, logout } = useAuth();
     const [products, setProducts] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [isStockMovementModalOpen, setIsStockMovementModalOpen] = useState(false); // Renomeado para clareza
+    const [isStockMovementModalOpen, setIsStockMovementModalOpen] = useState(false); 
     const [selectedProduct, setSelectedProduct] = useState(null);
-    const [isQRCodeModalOpen, setIsQRCodeModalOpen] = useState(false); // 2. Novo estado para o modal de QR Code
-    
+    const [isQRCodeModalOpen, setIsQRCodeModalOpen] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
 
-    // Funções para manipular a URL
-    const handleFilterChange = (key, value) => {
+    const isVisualizador = user && user.role === 'Visualizador';
+
+    const handleFilterChange = useCallback((key, value) => {
         const newParams = new URLSearchParams(searchParams);
         if (value) {
             newParams.set(key, value);
@@ -29,7 +26,7 @@ const StockDashboard = () => {
             newParams.delete(key);
         }
         setSearchParams(newParams);
-    };
+    }, [searchParams, setSearchParams]);
 
     const fetchProducts = useCallback(async () => {
         if (!token) return;
@@ -70,8 +67,15 @@ const StockDashboard = () => {
     }, [searchParams, token, logout]);
 
     useEffect(() => {
+        if (isVisualizador) {
+            handleFilterChange('estoque', 'ALMOXARIFADO');
+        }
+    }, [isVisualizador, handleFilterChange]);
+
+     useEffect(() => {
         fetchProducts();
     }, [fetchProducts]);
+
 
     const handleOpenStockMovementModal = (product) => { // Renomeado
         setSelectedProduct(product);
@@ -104,11 +108,19 @@ const StockDashboard = () => {
                     className="filter-select"
                     value={searchParams.get('estoque') || 'ALMOXARIFADO'} 
                     onChange={e => handleFilterChange('estoque', e.target.value)}
+                    disabled={isVisualizador} // 3. Desabilita o dropdown para o Visualizador
+                    title={isVisualizador ? "Você só tem permissão para ver o Almoxarifado." : ""}
                 >
                     <option value="ALMOXARIFADO">Almoxarifado</option>
-                    <option value="DIDATICO">Ambiente Didático</option>
-                    <option value="ASSISTENCIA">Assistência Técnica</option>
-                    <option value="ADMINISTRATIVO">Estoque Administrativo</option>
+                    
+                    {/* 4. SÓ RENDERIZA as outras opções se NÃO for um Visualizador */}
+                    {!isVisualizador && (
+                        <>
+                            <option value="DIDATICO">Ambiente Didático</option>
+                            <option value="ASSISTENCIA">Assistência Técnica</option>
+                            <option value="ADMINISTRATIVO">Estoque Administrativo</option>
+                        </>
+                    )}
                 </select>
             </div>
             

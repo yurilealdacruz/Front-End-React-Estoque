@@ -7,12 +7,14 @@ import SearchBar from '../components/SearchBar.jsx'; // 2. Corrige o caminho de 
 
 const HistoryPage = () => {
     // 3. Pega o 'logout' do contexto junto com o 'token'
-    const { token, logout } = useAuth(); 
+    const { user, token, logout } = useAuth(); 
     const [movimentacoes, setMovimentacoes] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const handleFilterChange = (key, value) => {
+    const isVisualizador = user && user.role === 'Visualizador';
+
+    const handleFilterChange = useCallback((key, value) => {
         const newParams = new URLSearchParams(searchParams);
         if (value) {
             newParams.set(key, value);
@@ -20,7 +22,7 @@ const HistoryPage = () => {
             newParams.delete(key);
         }
         setSearchParams(newParams);
-    };
+    }, [searchParams, setSearchParams]);
 
     const fetchHistory = useCallback(async () => {
         if (!token) return;
@@ -45,27 +47,42 @@ const HistoryPage = () => {
         }
     }, [searchParams, token, logout]); // Agora 'logout' é uma dependência válida
 
-    useEffect(() => {
-        fetchHistory();
-    }, [fetchHistory]);
+     useEffect(() => {
+        if (isVisualizador) {
+            handleFilterChange('estoque', 'ALMOXARIFADO');
+        }
+    }, [isVisualizador, handleFilterChange]);
+
+        useEffect(() => {
+            fetchHistory();
+        }, [fetchHistory]);
+
 
 
     return (
         <div className="history-container">
             <h1>Histórico de Movimentações</h1>
 
-            <div className="stock-selector-container">
-                <label htmlFor="stock-select">Filtrar por Estoque:</label>
+           <div className="stock-selector-container">
+                <label htmlFor="stock-select">Visualizando Estoque:</label>
                 <select 
                     id="stock-select"
                     className="filter-select"
-                    value={searchParams.get('estoque') || 'ALMOXARIFADO'}
+                    value={searchParams.get('estoque') || 'ALMOXARIFADO'} 
                     onChange={e => handleFilterChange('estoque', e.target.value)}
+                    disabled={isVisualizador} // 3. Desabilita o dropdown para o Visualizador
+                    title={isVisualizador ? "Você só tem permissão para ver o Almoxarifado." : ""}
                 >
                     <option value="ALMOXARIFADO">Almoxarifado</option>
-                    <option value="DIDATICO">Ambiente Didático</option>
-                    <option value="ASSISTENCIA">Assistência Técnica</option>
-                    <option value="ADMINISTRATIVO">Estoque Administrativo</option>
+                    
+                    {/* 4. SÓ RENDERIZA as outras opções se NÃO for um Visualizador */}
+                    {!isVisualizador && (
+                        <>
+                            <option value="DIDATICO">Ambiente Didático</option>
+                            <option value="ASSISTENCIA">Assistência Técnica</option>
+                            <option value="ADMINISTRATIVO">Estoque Administrativo</option>
+                        </>
+                    )}
                 </select>
             </div>
 
