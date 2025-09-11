@@ -65,6 +65,7 @@ const HistoryPage = () => {
                     <option value="ALMOXARIFADO">Almoxarifado</option>
                     <option value="DIDATICO">Ambiente Didático</option>
                     <option value="ASSISTENCIA">Assistência Técnica</option>
+                    <option value="ADMINISTRATIVO">Estoque Administrativo</option>
                 </select>
             </div>
 
