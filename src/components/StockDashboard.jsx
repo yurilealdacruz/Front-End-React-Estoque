@@ -102,27 +102,33 @@ const StockDashboard = () => {
     return (
         <>
             <div className="stock-selector-container">
-                <label htmlFor="stock-select">Visualizando Estoque:</label>
-                <select 
-                    id="stock-select"
-                    className="filter-select"
-                    value={searchParams.get('estoque') || 'ALMOXARIFADO'} 
-                    onChange={e => handleFilterChange('estoque', e.target.value)}
-                    disabled={isVisualizador} // 3. Desabilita o dropdown para o Visualizador
-                    title={isVisualizador ? "Você só tem permissão para ver o Almoxarifado." : ""}
-                >
+            <label htmlFor="stock-select">Visualizando Estoque:</label>
+            <select 
+                id="stock-select"
+                className="filter-select"
+                value={searchParams.get('estoque') || (user.role === 'Moderador' ? user.managed_stock : 'ALMOXARIFADO')} 
+                onChange={e => handleFilterChange('estoque', e.target.value)}
+                // Desabilita se não for Admin, pois Moderadores e Visualizadores só podem ver um estoque.
+                disabled={user.role !== 'Admin'}
+                title={user.role !== 'Admin' ? "Você só tem permissão para ver este estoque." : ""}
+            >
+                {/* Lógica condicional para renderizar as opções */}
+                {user.role === 'Admin' && (
+                    <>
+                        <option value="ALMOXARIFADO">Almoxarifado</option>
+                        <option value="DIDATICO">Ambiente Didático</option>
+                        <option value="ASSISTENCIA">Assistência Técnica</option>
+                        <option value="ADMINISTRATIVO">Estoque Administrativo</option>
+                    </>
+                )}
+                {user.role === 'Moderador' && (
+                    <option value={user.managed_stock}>{user.managed_stock.replace('_', ' ')}</option>
+                )}
+                {user.role === 'Visualizador' && (
                     <option value="ALMOXARIFADO">Almoxarifado</option>
-                    
-                    {/* 4. SÓ RENDERIZA as outras opções se NÃO for um Visualizador */}
-                    {!isVisualizador && (
-                        <>
-                            <option value="DIDATICO">Ambiente Didático</option>
-                            <option value="ASSISTENCIA">Assistência Técnica</option>
-                            <option value="ADMINISTRATIVO">Estoque Administrativo</option>
-                        </>
-                    )}
-                </select>
-            </div>
+                )}
+            </select>
+        </div>
             
             <div className="filters">
                 <SearchBar onSearch={(term) => handleFilterChange('search', term)} />
