@@ -70,7 +70,7 @@ const HistoryPage = () => {
                     className="filter-select"
                     value={searchParams.get('estoque') || 'ALMOXARIFADO'} 
                     onChange={e => handleFilterChange('estoque', e.target.value)}
-                    disabled={isVisualizador} // 3. Desabilita o dropdown para o Visualizador
+                    disabled={user.role !== 'Admin'}
                     title={isVisualizador ? "Você só tem permissão para ver o Almoxarifado." : ""}
                 >
                     <option value="ALMOXARIFADO">Almoxarifado</option>
