@@ -73,7 +73,7 @@ const HistoryPage = () => {
                     disabled={user.role !== 'Admin'}
                     title={isVisualizador ? "Você só tem permissão para ver o Almoxarifado." : ""}
                 >
-                    <option value="ALMOXARIFADO">Almoxarifado</option>
+                    <option value="ALMOXARIFADO"></option>
                     
                     {/* 4. SÓ RENDERIZA as outras opções se NÃO for um Visualizador */}
                     {!isVisualizador && (
