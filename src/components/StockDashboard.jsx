@@ -147,7 +147,7 @@ const StockDashboard = () => {
             <div className="filters">
                 <SearchBar onSearch={(term) => handleUrlParamsChange('search', term)} />
                 <button className="btn btn-secondary" onClick={handleExportExcel}>Exportar para Excel</button>
-                <button className="btn btn-secondary" onClick={handleExportPDF}>Exportar para PDF</button>
+              {/*   <button className="btn btn-secondary" onClick={handleExportPDF}>Exportar para PDF</button>  */}
                 <button className="btn btn-primary" onClick={handleOpenQRCodeModal} style={{ marginLeft: '10px' }}>Gerar QR Code</button>
             </div>
             
