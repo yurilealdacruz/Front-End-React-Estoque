@@ -60,7 +60,6 @@ function ProductItem({ product, onMoveStock }) {
         <td>{product.lastUpdated}</td>
         <td>{product.name}</td>
         
-        {/* 2. ADICIONA AS CÉLULAS DE DADOS PARA MODELO E CATEGORIA */}
         <td>{product.modelo || 'N/A'}</td>
         <td>{product.categoria_almo || 'N/A'}</td>
         
