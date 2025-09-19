@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+
 import SearchBar from '../components/SearchBar.jsx';
 import ProductList from '../components/ProductList.jsx';
 import StockMovementModal from '../components/StockMovementModal.jsx';
 import QRCodeModal from '../components/QRCodeModal.jsx'; 
-
 
 const StockDashboard = () => {
     const { user, token, logout } = useAuth();
@@ -18,6 +18,7 @@ const StockDashboard = () => {
 
     const isVisualizador = user && user.role === 'Visualizador';
 
+    // Esta função genérica agora lida com TODOS os filtros da URL
     const handleFilterChange = useCallback((key, value) => {
         const newParams = new URLSearchParams(searchParams);
         if (value) {
@@ -28,10 +29,25 @@ const StockDashboard = () => {
         setSearchParams(newParams);
     }, [searchParams, setSearchParams]);
 
+    const handleSort = (field) => {
+        const currentOrdering = searchParams.get('ordering') || '';
+        
+        let newOrdering = field;
+        if (currentOrdering === field) {
+            newOrdering = `-${field}`; // Inverte a ordem
+        } else if (currentOrdering === `-${field}`) {
+            newOrdering = ''; // Remove a ordenação
+        }
+
+        // Usa a mesma função que já temos para atualizar a URL!
+        handleFilterChange('ordering', newOrdering);
+    };
+
     const fetchProducts = useCallback(async () => {
         if (!token) return;
 
         setIsLoading(true);
+        // A URL já lê todos os parâmetros, incluindo o de ordenação
         const apiUrl = `${import.meta.env.VITE_API_URL}/produtos/?${searchParams.toString()}`;
         
         try {
@@ -65,38 +81,38 @@ const StockDashboard = () => {
             setIsLoading(false);
         }
     }, [searchParams, token, logout]);
-
+    
     useEffect(() => {
         if (isVisualizador) {
             handleFilterChange('estoque', 'ALMOXARIFADO');
         }
     }, [isVisualizador, handleFilterChange]);
 
-     useEffect(() => {
+    useEffect(() => {
         fetchProducts();
     }, [fetchProducts]);
 
-
-    const handleOpenStockMovementModal = (product) => { // Renomeado
+    // Funções para os modais (sem alteração)
+    const handleOpenStockMovementModal = (product) => {
+        // Usa a variável 'product' para definir qual produto foi selecionado
         setSelectedProduct(product);
+        // Usa a função 'setIsStockMovementModalOpen' para abrir o modal
         setIsStockMovementModalOpen(true);
     };
-
-    const handleCloseStockMovementModal = () => { // Renomeado
+     const handleCloseStockMovementModal = () => {
         setSelectedProduct(null);
+        // Usa a função 'setIsStockMovementModalOpen' para fechar o modal
         setIsStockMovementModalOpen(false);
     };
-
-    const handleOpenQRCodeModal = () => { // 3. Nova função para abrir o modal de QR Code
+   const handleOpenQRCodeModal = () => {
         setIsQRCodeModalOpen(true);
     };
-
-    const handleCloseQRCodeModal = () => { // 3. Nova função para fechar o modal de QR Code
+     const handleCloseQRCodeModal = () => {
         setIsQRCodeModalOpen(false);
     };
 
-    // 4. Constrói a URL completa para o QR Code
     const currentAbsoluteUrl = window.location.origin + window.location.pathname + '?' + searchParams.toString();
+
 
 
     return (
@@ -132,19 +148,20 @@ const StockDashboard = () => {
             
             <div className="filters">
                 <SearchBar onSearch={(term) => handleFilterChange('search', term)} />
-                {/* Botão para gerar QR Code */}
                 <button className="btn btn-primary" onClick={handleOpenQRCodeModal} style={{ marginLeft: '10px' }}>
                     Gerar QR Code
                 </button>
-                {/* TODO: Botão de Exportar para Excel aqui, se quiser */}
             </div>
-            
             {isLoading ? (
                 <p style={{textAlign: 'center', padding: '2rem'}}>Carregando produtos...</p> 
             ) : (
-                <ProductList products={products} onMoveStock={handleOpenStockMovementModal} />
+                <ProductList 
+                    products={products} 
+                    onMoveStock={handleOpenStockMovementModal}
+                    onSort={handleSort}
+                    currentOrdering={searchParams.get('ordering') || ''}
+                />
             )}
-
             {isStockMovementModalOpen && (
                 <StockMovementModal 
                     product={selectedProduct}
@@ -153,9 +170,9 @@ const StockDashboard = () => {
                 />
             )}
 
-            {isQRCodeModalOpen && ( // 5. Renderiza o modal de QR Code condicionalmente
+            {isQRCodeModalOpen && (
                 <QRCodeModal
-                    url={currentAbsoluteUrl} // Passa a URL atual completa
+                    url={currentAbsoluteUrl}
                     onClose={handleCloseQRCodeModal}
                 />
             )}

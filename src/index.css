@@ -672,3 +672,22 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     margin-bottom: var(--space-lg);
     flex-wrap: wrap; /* Ajuda em telas menores */
 }
+
+/* em src/index.css */
+.sort-button {
+  background: none;
+  border: none;
+  color: inherit; /* Herda a cor do <th> */
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  width: 100%;
+}
+
+.sort-button:hover {
+  color: var(--primary-blue);
+}

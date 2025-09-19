@@ -4,21 +4,40 @@ import React from 'react';
 import ProductItem from './ProductItem.jsx';
 
 // 1. Receba a prop 'onMoveStock' aqui
-const ProductList = ({ products, onMoveStock }) => {
-  return (
-     <div className="products-list">
+const ProductList = ({ products, onMoveStock, onSort, currentOrdering }) => {
+
+   const renderSortArrow = (field) => {
+    if (currentOrdering === field) {
+      return ' ▲'; // Seta para cima (ascendente)
+    }
+    if (currentOrdering === `-${field}`) {
+      return ' ▼'; // Seta para baixo (descendente)
+    }
+    return ''; // Sem ordenação
+  };
+
+   const SortableHeader = ({ field, label }) => (
+    <th>
+      <button onClick={() => onSort(field)} className="sort-button">
+        {label}{renderSortArrow(field)}
+      </button>
+    </th>
+  ); 
+
+   return (
+    <div className="products-list">
       <table className="product-table">
         <thead>
           <tr>
             <th></th> {/* Checkbox */}
-            <th>SKU</th>
-            <th>Última Atualização</th>
-            <th>Produto</th>
-            <th>Modelo</th>      {/* <-- ADICIONADO */}
-            <th>Categoria</th>   {/* <-- ADICIONADO */}
-            <th>Fornecedor</th>
+            <SortableHeader field="sku" label="SKU" />
+            <SortableHeader field="ultima_atualizacao" label="Última Atualização" />
+            <SortableHeader field="nome" label="Produto" />
+            <SortableHeader field="modelo" label="Modelo" />
+            <SortableHeader field="categoria_almo" label="Categoria" />
+            <th>Fornecedor</th> {/* Exemplo de campo não ordenável */}
             <th>Localização</th>
-            <th>Qtd.</th>
+            <SortableHeader field="quantidade" label="Qtd." />
             <th>Status</th>
             <th>Ações</th>
           </tr>
@@ -36,5 +55,6 @@ const ProductList = ({ products, onMoveStock }) => {
     </div>
   );
 };
+
 
 export default ProductList;
