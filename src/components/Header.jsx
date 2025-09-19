@@ -8,12 +8,7 @@ const Header = () => {
     <header className="main-header">
       <h1>Controle de Estoque - Núcleo de Técnologia da Informação</h1>
       <div className="header-actions">
-        <button className="btn btn-secondary">Exportar para Excel</button>
-        <button className="btn btn-secondary">Exportar para PDF</button>
-
-
         
-        {/* Botão condicional para adicionar produto */}
         {(user.role === 'Admin' || user.role === 'Moderador') && (
           <Link to="/produtos/novo" className="btn btn-primary">
             + Adicionar Produto

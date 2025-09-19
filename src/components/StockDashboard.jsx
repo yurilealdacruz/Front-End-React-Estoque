@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-
+import * as XLSX from 'xlsx';
 import SearchBar from '../components/SearchBar.jsx';
 import ProductList from '../components/ProductList.jsx';
 import StockMovementModal from '../components/StockMovementModal.jsx';
 import QRCodeModal from '../components/QRCodeModal.jsx'; 
+import jsPDF from 'jspdf'; 
+import 'jspdf-autotable';
 
 const StockDashboard = () => {
     const { user, token, logout } = useAuth();
@@ -41,6 +43,63 @@ const StockDashboard = () => {
 
         // Usa a mesma função que já temos para atualizar a URL!
         handleFilterChange('ordering', newOrdering);
+    };
+
+    const handleExportExcel = () => {
+        // Mapeia os dados para ter cabeçalhos amigáveis em português
+        const dataToExport = products.map(p => ({
+            'SKU': p.sku,
+            'Produto': p.name,
+            'Modelo': p.modelo,
+            'Categoria': p.categoria_almo,
+            'Fornecedor': p.supplier,
+            'Localização': p.location,
+            'Quantidade': p.quantity,
+            'Status': p.status,
+            'Última Atualização': p.lastUpdated
+        }));
+
+        // Cria uma "planilha" a partir dos seus dados
+        const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+        // Cria um novo "livro" de Excel
+        const workbook = XLSX.utils.book_new();
+        // Adiciona a planilha ao livro
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Estoque");
+
+        // Gera e baixa o arquivo .xlsx
+        XLSX.writeFile(workbook, "relatorio_estoque.xlsx");
+    };
+
+    const handleExportPDF = () => {
+        const doc = new jsPDF();
+
+        // Define os cabeçalhos da tabela no PDF
+        const tableColumn = ["SKU", "Produto", "Modelo", "Qtd.", "Status"];
+        // Define as linhas da tabela
+        const tableRows = [];
+
+        products.forEach(product => {
+            const productData = [
+                product.sku,
+                product.name,
+                product.modelo || 'N/A',
+                product.quantity,
+                product.status
+            ];
+            tableRows.push(productData);
+        });
+
+        // Usa o plugin autoTable para desenhar a tabela
+        doc.autoTable({
+            head: [tableColumn],
+            body: tableRows,
+            startY: 20, // Onde a tabela começa na página
+            theme: 'grid', // Estilo da tabela
+            headStyles: { fillColor: [22, 160, 133] }, // Cor do cabeçalho
+        });
+        
+        doc.text("Relatório de Estoque", 14, 15);
+        doc.save("relatorio_estoque.pdf");
     };
 
     const fetchProducts = useCallback(async () => {
@@ -148,6 +207,12 @@ const StockDashboard = () => {
             
             <div className="filters">
                 <SearchBar onSearch={(term) => handleFilterChange('search', term)} />
+                <button className="btn btn-secondary" onClick={handleExportExcel}>
+                    Exportar para Excel
+                </button>
+                <button className="btn btn-secondary" onClick={handleExportPDF}>
+                    Exportar para PDF
+                </button>
                 <button className="btn btn-primary" onClick={handleOpenQRCodeModal} style={{ marginLeft: '10px' }}>
                     Gerar QR Code
                 </button>
